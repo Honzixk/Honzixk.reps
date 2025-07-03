@@ -1,28 +1,92 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Můj první web</title>
+  <meta charset="UTF-8">
+  <title>HONZIXKREPS</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 50px;
-      background-color: #f0f0f0;
+      background-color: #000;
+      color: #fff;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
     }
     h1 {
-      color: #3366cc;
+      color: #00ff80;
     }
-    p {
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .card {
+      background-color: #111;
+      border: 1px solid #222;
+      border-radius: 8px;
+      text-align: center;
+      overflow: hidden;
+      text-decoration: none;
+      color: white;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background-color: #000;
+    }
+    .info {
+      padding: 12px;
+    }
+    .name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .price {
+      color: #00ff80;
       font-size: 18px;
-      color: #555;
     }
   </style>
 </head>
 <body>
-  <h1>Vítej na mém webu!</h1>
-  <p>Toto je jednoduchý web vytvořený pomocí GitHub Pages.</p>
+  <h1>HONZIXKREPS</h1>
+  <div class="grid" id="productGrid"></div>
+
+  <script>
+    const sheetID = '1NKHtlFJQo-qoPGTyCaMyeugL8sTqqByPp2qLzqp-qcY';
+    const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
+
+    fetch(sheetURL)
+      .then(res => res.text())
+      .then(data => {
+        const json = JSON.parse(data.match(/.*?({.*})/s)[1]);
+        const rows = json.table.rows;
+        const grid = document.getElementById('productGrid');
+
+        rows.forEach(row => {
+          const [img, name, price, link] = row.c.map(cell => cell?.v || '');
+
+          const card = document.createElement('a');
+          card.className = 'card';
+          card.href = link;
+          card.target = '_blank';
+          card.innerHTML = `
+            <img src="${img}" alt="${name}">
+            <div class="info">
+              <div class="name">${name}</div>
+              <div class="price">${price}</div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      })
+      .catch(err => console.error('Chyba při načítání dat:', err));
+  </script>
 </body>
 </html>
+
